@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Custom Secret Code Translator</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+    textarea { width: 100%; height: 100px; margin-bottom: 10px; }
+    button { padding: 10px 20px; margin-right: 10px; }
+    .output { background: #fff; padding: 10px; min-height: 50px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Custom Secret Code Translator</h1>
+
+  <h2>Text to Code</h2>
+  <textarea id="textInput" placeholder="Type your message..."></textarea>
+  <br>
+  <button onclick="encode()">Encode</button>
+  <div class="output" id="encodedOutput"></div>
+
+  <h2>Code to Text</h2>
+  <textarea id="codeInput" placeholder="Enter code like 01 00 06 30"></textarea>
+  <br>
+  <button onclick="decode()">Decode</button>
+  <div class="output" id="decodedOutput"></div>
+
+  <script>
+    // Custom code table
+    const codeToChar = {
+      '00': ' ',
+      '01': 'A',
+      '06': 'F',
+      '07': 'G',
+      '09': 'I',
+      '10': 'J',
+      '23': 'W',
+      '26': 'Z',
+      '27': '.',
+      '28': ',',
+      '30': '!',
+      '33': ';',
+    };
+
+    // Invert the table for encoding
+    const charToCode = {};
+    for (let code in codeToChar) {
+      charToCode[codeToChar[code]] = code;
+    }
+
+    function encode() {
+      let text = document.getElementById('textInput').value.toUpperCase();
+      let codeArr = [];
+      for (let char of text) {
+        if (charToCode[char]) {
+          codeArr.push(charToCode[char]);
+        } else {
+          // If character not in table, keep it as is
+          codeArr.push(char);
+        }
+      }
+      document.getElementById('encodedOutput').innerText = codeArr.join(' ');
+    }
+
+    function decode() {
+      let codes = document.getElementById('codeInput').value.split(' ');
+      let text = '';
+      for (let c of codes) {
+        if (codeToChar[c]) {
+          text += codeToChar[c];
+        } else {
+          // If code not in table, keep it as is
+          text += c;
+        }
+      }
+      document.getElementById('decodedOutput').innerText = text;
+    }
+  </script>
+</body>
+</html>
