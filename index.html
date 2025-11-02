@@ -20,7 +20,7 @@
   <div class="output" id="encodedOutput"></div>
 
   <h2>Code to Text</h2>
-  <textarea id="codeInput" placeholder="Enter code like 01 00 06 30"></textarea>
+  <textarea id="codeInput" placeholder="Enter code like 08 05 12 12 15 30"></textarea>
   <br>
   <button onclick="decode()">Decode</button>
   <div class="output" id="decodedOutput"></div>
@@ -28,40 +28,40 @@
   <script>
     // Custom code table
     const codeToChar = {
-    '00': ' ',
-  '01': 'A',
-  '02': 'B',
-  '03': 'C',
-  '04': 'D',
-  '05': 'E',
-  '06': 'F',
-  '07': 'G',
-  '08': 'H',
-  '09': 'I',
-  '10': 'J',
-  '11': 'K',
-  '12': 'L',
-  '13': 'M',
-  '14': 'N',
-  '15': 'O',
-  '16': 'P',
-  '17': 'Q',
-  '18': 'R',
-  '19': 'S',
-  '20': 'T',
-  '21': 'U',
-  '22': 'V',
-  '23': 'W',
-  '24': 'X',
-  '25': 'Y',
-  '26': 'Z',
-  '27': '.',
-  '28': ',',
-  '30': '!',
-  '33': ';
+      '00': ' ',
+      '01': 'A',
+      '02': 'B',
+      '03': 'C',
+      '04': 'D',
+      '05': 'E',
+      '06': 'F',
+      '07': 'G',
+      '08': 'H',
+      '09': 'I',
+      '10': 'J',
+      '11': 'K',
+      '12': 'L',
+      '13': 'M',
+      '14': 'N',
+      '15': 'O',
+      '16': 'P',
+      '17': 'Q',
+      '18': 'R',
+      '19': 'S',
+      '20': 'T',
+      '21': 'U',
+      '22': 'V',
+      '23': 'W',
+      '24': 'X',
+      '25': 'Y',
+      '26': 'Z',
+      '27': '.',
+      '28': ',',
+      '30': '!',
+      '33': ';'
     };
 
-    // Invert the table for encoding
+    // Invert table for encoding
     const charToCode = {};
     for (let code in codeToChar) {
       charToCode[codeToChar[code]] = code;
@@ -74,26 +74,14 @@
         if (charToCode[char]) {
           codeArr.push(charToCode[char]);
         } else {
-          // If character not in table, keep it as is
-          codeArr.push(char);
+          // Unknown character placeholder
+          codeArr.push('??');
         }
       }
       document.getElementById('encodedOutput').innerText = codeArr.join(' ');
     }
 
     function decode() {
-      let codes = document.getElementById('codeInput').value.split(' ');
-      let text = '';
-      for (let c of codes) {
-        if (codeToChar[c]) {
-          text += codeToChar[c];
-        } else {
-          // If code not in table, keep it as is
-          text += c;
-        }
-      }
-      document.getElementById('decodedOutput').innerText = text;
-    }
-  </script>
-</body>
-</html>
+      let codes = document.getElementById('codeInput').value.trim().split(/\s+/);
+
+
