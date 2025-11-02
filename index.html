@@ -20,53 +20,28 @@
   <div class="output" id="encodedOutput"></div>
 
   <h2>Code to Text</h2>
-  <textarea id="codeInput" placeholder="Enter code like 08 05 12 12 15 30"></textarea>
+  <textarea id="codeInput" placeholder="Enter code like 08 05 12 12 15 30 46 47"></textarea>
   <br>
   <button onclick="decode()">Decode</button>
   <div class="output" id="decodedOutput"></div>
 
   <script>
-    // Custom code table
+    // Custom code table: letters, numbers, punctuation, space
     const codeToChar = {
       '00': ' ',
-      '01': 'A',
-      '02': 'B',
-      '03': 'C',
-      '04': 'D',
-      '05': 'E',
-      '06': 'F',
-      '07': 'G',
-      '08': 'H',
-      '09': 'I',
-      '10': 'J',
-      '11': 'K',
-      '12': 'L',
-      '13': 'M',
-      '14': 'N',
-      '15': 'O',
-      '16': 'P',
-      '17': 'Q',
-      '18': 'R',
-      '19': 'S',
-      '20': 'T',
-      '21': 'U',
-      '22': 'V',
-      '23': 'W',
-      '24': 'X',
-      '25': 'Y',
-      '26': 'Z',
-      '27': '.',
-      '28': ',',
-      '30': '!',
-      '33': ';',
-'34': '?'
+      '01': 'A','02': 'B','03': 'C','04': 'D','05': 'E','06': 'F','07': 'G',
+      '08': 'H','09': 'I','10': 'J','11': 'K','12': 'L','13': 'M','14': 'N',
+      '15': 'O','16': 'P','17': 'Q','18': 'R','19': 'S','20': 'T','21': 'U',
+      '22': 'V','23': 'W','24': 'X','25': 'Y','26': 'Z',
+      '27': '.','28': ',','30': '!','33': ';',
+      '46': '0','47': '1','48': '2','49': '3','50': '4','51': '5','52': '6',
+      '53': '7','54': '8','55': '9'
     };
 
     // Invert table safely for encoding
     const charToCode = {};
     for (let code in codeToChar) {
-      let char = codeToChar[code];
-      // Only assign if not already assigned to prevent duplicates
+      const char = codeToChar[code];
       if (!charToCode[char]) {
         charToCode[char] = code;
       }
@@ -79,7 +54,7 @@
         if (charToCode[char]) {
           codeArr.push(charToCode[char]);
         } else {
-          // Unknown characters are skipped safely
+          // Unknown characters are skipped
           codeArr.push('??');
         }
       }
@@ -101,6 +76,3 @@
   </script>
 </body>
 </html>
-
-
-
