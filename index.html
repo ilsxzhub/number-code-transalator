@@ -42,27 +42,21 @@
     '70':'[','71':']','72':'{','73':'}','74':'"','75':'+','76':'=','77':'~','78':'`',
     '79':'-','80':'_' 
     };
-def decode_sequence(seq):
+def binary_block(seq, per_row=8):
+    """Turns a sequence into a neat block of characters using the sheet."""
     items = seq.strip().split()
-    decoded_chars = []
-    last_was_space = False
-
-    for item in items:
-        char = sheet.get(item, '?')
-        # Treat '00' and '69' as space
-        if char == ' ':
-            if not last_was_space:  # avoid multiple consecutive spaces
-                decoded_chars.append(' ')
-                last_was_space = True
-        else:
-            decoded_chars.append(char)
-            last_was_space = False
-
-    return ''.join(decoded_chars)
+    decoded_chars = [sheet.get(item, '?') for item in items]
+    
+    lines = []
+    for i in range(0, len(decoded_chars), per_row):
+        line = ''.join(decoded_chars[i:i+per_row])
+        lines.append(line)
+    
+    return '\n'.join(lines)
 
 # Example usage:
-sequence = "03 08 01 20 07 16 20 69 09 19 69 20 08 05 69 02 05 19 20 69 01 09 69 ( 09 69 12 15 22 05 69 21 )"
-print(decode_sequence(sequence))
+sequence = "01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01"
+print(binary_block(sequence, per_row=10))
     // Invert table safely for encoding
     const charToCode = {};
     for (let code in codeToChar) {
@@ -101,6 +95,7 @@ print(decode_sequence(sequence))
   </script>
 </body>
 </html>
+
 
 
 
