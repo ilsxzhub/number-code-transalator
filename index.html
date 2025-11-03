@@ -41,29 +41,7 @@
     '69':' ',
     '70':'[','71':']','72':'{','73':'}','74':'"','75':'+','76':'=','77':'~','78':'`',
     };
-def binary_block(seq, per_row=8):
-    """Turns a sequence into a neat block of characters using the sheet."""
-    items = seq.strip().split()
-    decoded_chars = [sheet.get(item, '?') for item in items]
-    
-    lines = []
-    for i in range(0, len(decoded_chars), per_row):
-        line = ''.join(decoded_chars[i:i+per_row])
-        lines.append(line)
-    
-    return '\n'.join(lines)
 
-# Example usage:
-sequence = "01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01"
-print(binary_block(sequence, per_row=10))
-    // Invert table safely for encoding
-    const charToCode = {};
-    for (let code in codeToChar) {
-      const char = codeToChar[code];
-      if (!charToCode[char]) {
-        charToCode[char] = code;
-      }
-    }
 
     function encode() {
       let text = document.getElementById('textInput').value.toUpperCase();
@@ -94,6 +72,7 @@ print(binary_block(sequence, per_row=10))
   </script>
 </body>
 </html>
+
 
 
 
