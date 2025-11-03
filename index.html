@@ -42,7 +42,27 @@
     '70':'[','71':']','72':'{','73':'}','74':'"','75':'+','76':'=','77':'~','78':'`',
     '79':'-','80':'_' 
     };
+def decode_sequence(seq):
+    items = seq.strip().split()
+    decoded_chars = []
+    last_was_space = False
 
+    for item in items:
+        char = sheet.get(item, '?')
+        # Treat '00' and '69' as space
+        if char == ' ':
+            if not last_was_space:  # avoid multiple consecutive spaces
+                decoded_chars.append(' ')
+                last_was_space = True
+        else:
+            decoded_chars.append(char)
+            last_was_space = False
+
+    return ''.join(decoded_chars)
+
+# Example usage:
+sequence = "03 08 01 20 07 16 20 69 09 19 69 20 08 05 69 02 05 19 20 69 01 09 69 ( 09 69 12 15 22 05 69 21 )"
+print(decode_sequence(sequence))
     // Invert table safely for encoding
     const charToCode = {};
     for (let code in codeToChar) {
@@ -81,6 +101,7 @@
   </script>
 </body>
 </html>
+
 
 
 
