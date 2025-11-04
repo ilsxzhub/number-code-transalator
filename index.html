@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Number Code Translator</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+    body { font-family: Arial, sans-serif; padding: 20px; background: #0000FF; }
     textarea { width: 100%; height: 100px; margin-bottom: 10px; }
     button { padding: 10px 20px; margin-right: 10px; }
     .output { background: #fff; padding: 10px; min-height: 50px; margin-bottom: 20px; white-space: pre-wrap; }
@@ -20,7 +20,7 @@
   <div class="output" id="encodedOutput"></div>
 
   <h2>Code to Text</h2>
-  <textarea id="codeInput" placeholder="Enter code like 08 05 12 12 15 30 46 47"></textarea>
+  <textarea id="codeInput" placeholder="Enter code like 08 01 08 01 30"></textarea>
   <br>
   <button onclick="decode()">Decode</button>
   <div class="output" id="decodedOutput"></div>
@@ -55,7 +55,7 @@
           codeArr.push(charToCode[char]);
         } else {
           // Unknown characters are skipped
-          codeArr.push(' ');
+          codeArr.push('??');
         }
       }
       document.getElementById('encodedOutput').innerText = codeArr.join(' ');
@@ -68,7 +68,7 @@
         if (codeToChar[c]) {
           text += codeToChar[c];
         } else {
-          text += '?';
+          text += '??';
         }
       }
       document.getElementById('decodedOutput').innerText = text;
@@ -76,6 +76,7 @@
   </script>
 </body>
 </html>
+
 
 
 
