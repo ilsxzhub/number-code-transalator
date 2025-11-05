@@ -9,6 +9,26 @@
     button { padding: 10px 20px; margin-right: 10px; }
     .output { background: #fff; padding: 10px; min-height: 50px; margin-bottom: 20px; white-space: pre-wrap; }
   </style>
+<script>
+  const randomMessages = [
+  "KEEP IT SECRET",
+  "HELLO WORLD",
+  "TRUST NO ONE",
+  "YOU FOUND ME",
+  "CODE IS POWER",
+  "I SEE YOU",
+  "AI IS FUN",
+  "STAY HIDDEN",
+  "MESSAGE UNKNOWN",
+  "THE CODE LIVES"
+];
+
+function generateRandomMessage() {
+  const message = randomMessages[Math.floor(Math.random() * randomMessages.length)];
+  document.getElementById("inputText").value = message;
+  encodeText(); // reuse your encoder function
+}
+</script>
 </head>
 <body>
   <h1>Number Code Translator</h1>
@@ -79,6 +99,7 @@
   </script>
 </body>
 </html>
+
 
 
 
