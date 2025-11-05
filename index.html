@@ -1,121 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Number Code Translator</title>
+  <meta charset="UTF-8" />
+  <title>Number Code Translator — Debug</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background: #CCDBEE; }
-    textarea { width: 100%; height: 100px; margin-bottom: 10px; }
+    textarea { width: 100%; height: 90px; margin-bottom: 10px; }
     button { padding: 10px 12px; margin-right: 8px; margin-top:6px; }
-    .output { background: #fff; padding: 10px; min-height: 50px; margin-bottom: 20px; white-space: pre-wrap; }
-    .row { display:flex; gap:8px; align-items:center; }
+    .output { background: #fff; padding: 10px; min-height: 50px; margin-bottom: 12px; white-space: pre-wrap; }
+    .status { font-size: 13px; color: #333; margin-top:8px; }
+    .log { font-family: monospace; background:#eee; padding:8px; max-height:200px; overflow:auto; }
   </style>
 </head>
 <body>
-  <h1>Number Code Translator</h1>
+  <h1>Number Code Translator — Debug</h1>
 
   <h2>Text to Code</h2>
-  <textarea id="textInput" placeholder="Type your message..."></textarea>
-  <div class="row">
-    <button onclick="encode()">Encode</button>
-    <button onclick="generateRandomMessage()">🔮 Generate Random Secret Message</button>
-    <button onclick="copyEncoded()">Copy Encoded</button>
+  <textarea id="textInput" placeholder="Type your message...">HELLO WORLD!</textarea>
+  <div>
+    <button id="btnEncode">Encode</button>
+    <button id="btnGen">🔮 Generate Random Secret Message</button>
+    <button id="btnCopyEnc">Copy Encoded</button>
   </div>
   <div class="output" id="encodedOutput"></div>
 
   <h2>Code to Text</h2>
-  <textarea id="codeInput" placeholder="Enter code like 08 01 08 01 30"></textarea>
-  <div class="row">
-    <button onclick="decode()">Decode</button>
-    <button onclick="copyDecoded()">Copy Decoded</button>
+  <textarea id="codeInput" placeholder="Enter code like 08 01 08 01 30">08 05 12 12 15 00 23 15 18 12 04 30</textarea>
+  <div>
+    <button id="btnDecode">Decode</button>
+    <button id="btnCopyDec">Copy Decoded</button>
   </div>
   <div class="output" id="decodedOutput"></div>
 
-  <script>
-    // Custom code table: letters, numbers, punctuation, space
-    const codeToChar = {
-      '00': ' ',
-      '01': 'A','02': 'B','03': 'C','04': 'D','05': 'E','06': 'F','07': 'G',
-      '08': 'H','09': 'I','10': 'J','11': 'K','12': 'L','13': 'M','14': 'N','15': 'O',
-      '16': 'P','17': 'Q','18': 'R','19': 'S','20': 'T','21': 'U','22': 'V','23': 'W',
-      '24': 'X','25': 'Y','26': 'Z',
-      '27': '.','28': ',','30': '!',
-      '46': '0','47': '1','48': '2','49': '3','50': '4','51': '5','52': '6','53': '7','54': '8','55': '9',
-      '56': '?','57': ':','58': ';','59': '>','60': '<',
-      '61': '*','62': '&','63': '^','64': '%','65': '$','66': '#','67': '@','68': '/',
-      '69': ' ',
-      'LP': '(', 'RP': ')'
-    };
+  <h3>Diagnostics</h3>
+  <div>
+    <button id="btnDiag">Run Diagnostics</button>
+    <button id="btnTest">Run Encode/Decode Test</button>
+  </div>
+  <div class="status" id="status">Status: waiting...</div>
+  <h4>Console log (captured)</h4>
+  <div class="log" id="log"></div>
 
-    // Invert table safely for encoding
-    const charToCode = {};
-    for (let code in codeToChar) {
-      const char = codeToChar[code];
-      if (!charToCode[char]) charToCode[char] = code;
-    }
+<script>
+(function(){
+  // small logger that prints to page AND console
+  const logEl = document.getElementById('log');
+  function log(...args){
+    console.log(...args);
+    logEl.textContent += args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ') + '\n';
+    logEl.scrollTop = logEl.scrollHeight;
+  }
 
-    function encode() {
-      let text = document.getElementById('textInput').value.toUpperCase();
-      let codeArr = [];
-      for (let char of text) {
-        if (charToCode[char]) {
-          codeArr.push(charToCode[char]);
-        } else {
-          // Unknown characters are represented as ??
-          codeArr.push('??');
-        }
+  // code table
+  const codeToChar = {
+    '00': ' ',
+    '01': 'A','02': 'B','03': 'C','04': 'D','05': 'E','06': 'F','07': 'G',
+    '08': 'H','09': 'I','10': 'J','11': 'K','12': 'L','13': 'M','14': 'N','15': 'O',
+    '16': 'P','17': 'Q','18': 'R','19': 'S','20': 'T','21': 'U','22': 'V','23': 'W',
+    '24': 'X','25': 'Y','26': 'Z',
+    '27': '.','28': ',','30': '!',
+    '46': '0','47': '1','48': '2','49': '3','50': '4','51': '5','52': '6','53': '7','54': '8','55': '9',
+    '56': '?','57': ':','58': ';','59': '>','60': '<',
+    '61': '*','62': '&','63': '^','64': '%','65': '$','66': '#','67': '@','68': '/',
+    '69': ' ',
+    'LP': '(', 'RP': ')'
+  };
+
+  // invert
+  const charToCode = {};
+  for (let code in codeToChar){
+    const ch = codeToChar[code];
+    if (!charToCode[ch]) charToCode[ch] = code;
+  }
+
+  function encode(){
+    try{
+      log('encode() called');
+      const text = document.getElementById('textInput').value.toUpperCase();
+      const arr = [];
+      for (let ch of text){
+        if (charToCode[ch]) arr.push(charToCode[ch]);
+        else arr.push('??'); // unknown
       }
-      document.getElementById('encodedOutput').innerText = codeArr.join(' ');
+      const out = arr.join(' ');
+      document.getElementById('encodedOutput').innerText = out;
+      document.getElementById('status').innerText = 'Status: encode OK';
+      log('encoded->', out);
+      return out;
+    }catch(e){
+      document.getElementById('status').innerText = 'Status: encode FAILED';
+      log('encode error:', e);
+      throw e;
     }
+  }
 
-    function decode() {
-      let codes = document.getElementById('codeInput').value.trim().split(/\s+/);
+  function decode(){
+    try{
+      log('decode() called');
+      const raw = document.getElementById('codeInput').value.trim();
+      if (!raw) { document.getElementById('decodedOutput').innerText = ''; log('nothing to decode'); return ''; }
+      const codes = raw.split(/\s+/);
       let text = '';
-      for (let c of codes) {
+      for (let c of codes){
         if (codeToChar[c]) text += codeToChar[c];
         else text += '??';
       }
       document.getElementById('decodedOutput').innerText = text;
+      document.getElementById('status').innerText = 'Status: decode OK';
+      log('decoded->', text);
+      return text;
+    }catch(e){
+      document.getElementById('status').innerText = 'Status: decode FAILED';
+      log('decode error:', e);
+      throw e;
     }
+  }
 
-    // ---------- Random message generator ----------
-    const randomMessages = [
-      "KEEP IT SECRET",
-      "HELLO WORLD",
-      "TRUST NO ONE",
-      "YOU FOUND ME",
-      "CODE IS POWER",
-      "I SEE YOU",
-      "AI IS FUN",
-      "STAY HIDDEN",
-      "MESSAGE UNKNOWN",
-      "THE CODE LIVES",
-      "I MADE THIS",
-      "SILENT SIGNAL"
-    ];
+  const randomMessages = [
+    "KEEP IT SECRET",
+    "HELLO WORLD",
+    "TRUST NO ONE",
+    "YOU FOUND ME",
+    "CODE IS POWER",
+    "I SEE YOU",
+    "AI IS FUN",
+    "STAY HIDDEN",
+    "MESSAGE UNKNOWN",
+    "THE CODE LIVES",
+    "I MADE THIS",
+    "SILENT SIGNAL"
+  ];
 
-    function generateRandomMessage() {
-      const message = randomMessages[Math.floor(Math.random() * randomMessages.length)];
-      document.getElementById('textInput').value = message;
-      encode(); // reuse your encoder to update encodedOutput
+  function generateRandomMessage(){
+    try{
+      log('generateRandomMessage() called');
+      const m = randomMessages[Math.floor(Math.random()*randomMessages.length)];
+      document.getElementById('textInput').value = m;
+      document.getElementById('status').innerText = 'Status: random message set';
+      encode();
+      return m;
+    }catch(e){
+      document.getElementById('status').innerText = 'Status: random FAILED';
+      log('generate error', e);
+      throw e;
     }
+  }
 
-    // ---------- Clipboard helpers ----------
-    async function copyEncoded() {
-      const text = document.getElementById('encodedOutput').innerText;
-      if (!text) return alert('Nothing to copy.');
+  async function copyToClipboard(text){
+    try{
       await navigator.clipboard.writeText(text);
-      alert('Encoded text copied!');
+      document.getElementById('status').innerText = 'Status: copied to clipboard';
+      log('copied to clipboard');
+    }catch(e){
+      // clipboard may fail on file:// or older browsers; fallback:
+      document.getElementById('status').innerText = 'Status: clipboard failed (see console)';
+      log('clipboard error', e);
     }
-    async function copyDecoded() {
-      const text = document.getElementById('decodedOutput').innerText;
-      if (!text) return alert('Nothing to copy.');
-      await navigator.clipboard.writeText(text);
-      alert('Decoded text copied!');
+  }
+
+  function runDiagnostics(){
+    log('--- running diagnostics ---');
+    // basic sanity checks
+    log('document readyState:', document.readyState);
+    log('textInput exists?', !!document.getElementById('textInput'));
+    log('codeInput exists?', !!document.getElementById('codeInput'));
+    log('encode fn exists?', !!encode);
+    log('decode fn exists?', !!decode);
+    // run small encode/decode roundtrip
+    const sample = 'TEST 123!';
+    document.getElementById('textInput').value = sample;
+    const enc = encode();
+    document.getElementById('codeInput').value = enc;
+    const dec = decode();
+    if (dec.replace(/\?/g,'') === sample.replace(/\d/g,'').replace(/\s/g,'') || dec){
+      log('roundtrip produced:', dec);
     }
-  </script>
+    log('--- diagnostics complete ---');
+  }
+
+  // attach event listeners
+  document.getElementById('btnEncode').addEventListener('click', () => { try{ encode(); } catch(e){ log(e); } });
+  document.getElementById('btnDecode').addEventListener('click', () => { try{ decode(); } catch(e){ log(e); } });
+  document.getElementById('btnGen').addEventListener('click', () => { try{ generateRandomMessage(); } catch(e){ log(e); } });
+  document.getElementById('btnCopyEnc').addEventListener('click', () => { copyToClipboard(document.getElementById('encodedOutput').innerText); });
+  document.getElementById('btnCopyDec').addEventListener('click', () => { copyToClipboard(document.getElementById('decodedOutput').innerText); });
+  document.getElementById('btnDiag').addEventListener('click', () => { runDiagnostics(); });
+  document.getElementById('btnTest').addEventListener('click', () => {
+    log('Running test: encode "HELLO!" and decode back');
+    document.getElementById('textInput').value = 'HELLO!';
+    const enc = encode();
+    document.getElementById('codeInput').value = enc;
+    const dec = decode();
+    log('test enc:', enc, ' test dec:', dec);
+  });
+
+  // initial auto-run small test on load
+  window.addEventListener('load', () => {
+    log('page loaded — initial quick test');
+    // don't automatically call encode/decode to avoid surprises, but you can run diagnostics
+  });
+
+})(); 
+</script>
 </body>
 </html>
+
+
+
 
 
 
