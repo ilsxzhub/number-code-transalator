@@ -6,68 +6,52 @@
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background: #CCDBEE; }
     textarea { width: 100%; height: 100px; margin-bottom: 10px; }
-    button { padding: 10px 20px; margin-right: 10px; }
+    button { padding: 10px 12px; margin-right: 8px; margin-top:6px; }
     .output { background: #fff; padding: 10px; min-height: 50px; margin-bottom: 20px; white-space: pre-wrap; }
+    .row { display:flex; gap:8px; align-items:center; }
   </style>
-<script>
-  const randomMessages = [
-  "KEEP IT SECRET",
-  "HELLO WORLD",
-  "TRUST NO ONE",
-  "YOU FOUND ME",
-  "CODE IS POWER",
-  "I SEE YOU",
-  "AI IS FUN",
-  "STAY HIDDEN",
-  "MESSAGE UNKNOWN",
-  "THE CODE LIVES"
-];
-
-function generateRandomMessage() {
-  const message = randomMessages[Math.floor(Math.random() * randomMessages.length)];
-  document.getElementById("textInput").value = message;
-  encodeText(); // reuse your encoder function
-}
-</script>
 </head>
 <body>
   <h1>Number Code Translator</h1>
-<button onclick="generateRandomMessage()">🔮 Generate Random Secret Message</button>
+
   <h2>Text to Code</h2>
   <textarea id="textInput" placeholder="Type your message..."></textarea>
-  <br>
-  <button onclick="encode()">Encode</button>
+  <div class="row">
+    <button onclick="encode()">Encode</button>
+    <button onclick="generateRandomMessage()">🔮 Generate Random Secret Message</button>
+    <button onclick="copyEncoded()">Copy Encoded</button>
+  </div>
   <div class="output" id="encodedOutput"></div>
 
   <h2>Code to Text</h2>
   <textarea id="codeInput" placeholder="Enter code like 08 01 08 01 30"></textarea>
-  <br>
-  <button onclick="decode()">Decode</button>
+  <div class="row">
+    <button onclick="decode()">Decode</button>
+    <button onclick="copyDecoded()">Copy Decoded</button>
+  </div>
   <div class="output" id="decodedOutput"></div>
 
   <script>
     // Custom code table: letters, numbers, punctuation, space
     const codeToChar = {
-    '00': ' ',
-    '01': 'A','02': 'B','03': 'C','04': 'D','05': 'E','06': 'F','07': 'G',
-    '08': 'H','09': 'I','10': 'J','11': 'K','12': 'L','13': 'M','14': 'N','15': 'O',
-    '16': 'P','17': 'Q','18': 'R','19': 'S','20': 'T','21': 'U','22': 'V','23': 'W',
-    '24': 'X','25': 'Y','26': 'Z',
-    '27': '.','28': ',','30': '!',
-    '46': '0','47': '1','48': '2','49': '3','50': '4','51': '5','52': '6','53': '7','54': '8','55': '9',
-    '56': '?','57': ':','58': ';','59': '>','60': '<',
-    '61': '*','62': '&','63': '^','64': '%','65': '$','66': '#','67': '@','68': '/',
-    '69': ' ',
-    'LP': '(', 'RP': ')'
+      '00': ' ',
+      '01': 'A','02': 'B','03': 'C','04': 'D','05': 'E','06': 'F','07': 'G',
+      '08': 'H','09': 'I','10': 'J','11': 'K','12': 'L','13': 'M','14': 'N','15': 'O',
+      '16': 'P','17': 'Q','18': 'R','19': 'S','20': 'T','21': 'U','22': 'V','23': 'W',
+      '24': 'X','25': 'Y','26': 'Z',
+      '27': '.','28': ',','30': '!',
+      '46': '0','47': '1','48': '2','49': '3','50': '4','51': '5','52': '6','53': '7','54': '8','55': '9',
+      '56': '?','57': ':','58': ';','59': '>','60': '<',
+      '61': '*','62': '&','63': '^','64': '%','65': '$','66': '#','67': '@','68': '/',
+      '69': ' ',
+      'LP': '(', 'RP': ')'
     };
 
     // Invert table safely for encoding
     const charToCode = {};
     for (let code in codeToChar) {
       const char = codeToChar[code];
-      if (!charToCode[char]) {
-        charToCode[char] = code;
-      }
+      if (!charToCode[char]) charToCode[char] = code;
     }
 
     function encode() {
@@ -77,7 +61,7 @@ function generateRandomMessage() {
         if (charToCode[char]) {
           codeArr.push(charToCode[char]);
         } else {
-          // Unknown characters are skipped
+          // Unknown characters are represented as ??
           codeArr.push('??');
         }
       }
@@ -88,17 +72,52 @@ function generateRandomMessage() {
       let codes = document.getElementById('codeInput').value.trim().split(/\s+/);
       let text = '';
       for (let c of codes) {
-        if (codeToChar[c]) {
-          text += codeToChar[c];
-        } else {
-          text += '??';
-        }
+        if (codeToChar[c]) text += codeToChar[c];
+        else text += '??';
       }
       document.getElementById('decodedOutput').innerText = text;
+    }
+
+    // ---------- Random message generator ----------
+    const randomMessages = [
+      "KEEP IT SECRET",
+      "HELLO WORLD",
+      "TRUST NO ONE",
+      "YOU FOUND ME",
+      "CODE IS POWER",
+      "I SEE YOU",
+      "AI IS FUN",
+      "STAY HIDDEN",
+      "MESSAGE UNKNOWN",
+      "THE CODE LIVES",
+      "I MADE THIS",
+      "SILENT SIGNAL"
+    ];
+
+    function generateRandomMessage() {
+      const message = randomMessages[Math.floor(Math.random() * randomMessages.length)];
+      document.getElementById('textInput').value = message;
+      encode(); // reuse your encoder to update encodedOutput
+    }
+
+    // ---------- Clipboard helpers ----------
+    async function copyEncoded() {
+      const text = document.getElementById('encodedOutput').innerText;
+      if (!text) return alert('Nothing to copy.');
+      await navigator.clipboard.writeText(text);
+      alert('Encoded text copied!');
+    }
+    async function copyDecoded() {
+      const text = document.getElementById('decodedOutput').innerText;
+      if (!text) return alert('Nothing to copy.');
+      await navigator.clipboard.writeText(text);
+      alert('Decoded text copied!');
     }
   </script>
 </body>
 </html>
+
+
 
 
 
