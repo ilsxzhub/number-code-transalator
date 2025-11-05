@@ -25,7 +25,7 @@
 
 function generateRandomMessage() {
   const message = randomMessages[Math.floor(Math.random() * randomMessages.length)];
-  document.getElementById("inputText").value = message;
+  document.getElementById("textInput").value = message;
   encodeText(); // reuse your encoder function
 }
 </script>
@@ -99,6 +99,7 @@ function generateRandomMessage() {
   </script>
 </body>
 </html>
+
 
 
 
