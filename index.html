@@ -77,8 +77,20 @@
       document.getElementById('decodedOutput').innerText = text;
     }
   </script>
+  <button id="copyBtn">📋 Copy to Clipboard</button>
+<textarea id="output" readonly>YOUR DECODED TEXT HERE</textarea>
+
+<script>
+document.getElementById("copyBtn").addEventListener("click", async () => {
+  const text = document.getElementById("output").value;
+  await navigator.clipboard.writeText(text);
+  alert("Copied to clipboard!");
+});
+</script>
+
 </body>
 </html>
+
 
 
 
